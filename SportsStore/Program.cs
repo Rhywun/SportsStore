@@ -11,6 +11,7 @@ namespace SportsStore
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
+            // ValidateScopes = false required for db migrations
             WebHost.CreateDefaultBuilder(args)
                    .UseStartup<Startup>()
                    .UseDefaultServiceProvider(options => options.ValidateScopes = false)
