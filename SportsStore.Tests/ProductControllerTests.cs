@@ -109,6 +109,7 @@ namespace SportsStore.Tests
                      new Product { ProductID = 4, Name = "P4", Category = "Cat2" },
                      new Product { ProductID = 5, Name = "P5", Category = "Cat3" }
                  }).AsQueryable());
+
             var target = new ProductController(mock.Object) { PageSize = 3 };
 
             ProductsListViewModel GetModel(ViewResult result) =>
