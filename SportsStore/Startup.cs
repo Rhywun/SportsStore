@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +23,7 @@ namespace SportsStore
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration["Data:SportsStoreProducts:ConnectionString"]));
             services.AddTransient<IProductRepository, EFProductRepository>();
+            services.AddTransient<IOrderRepository, EFOrderRepository>();
 
             // Session support
             services.AddMemoryCache();
