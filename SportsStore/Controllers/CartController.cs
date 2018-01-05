@@ -1,8 +1,6 @@
 ﻿using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SportsStore.Data;
-using SportsStore.Infrastructure;
 using SportsStore.Models;
 using SportsStore.Models.ViewModels;
 
@@ -11,15 +9,17 @@ namespace SportsStore.Controllers
     public class CartController : Controller
     {
         private readonly IProductRepository _repository;
+        private readonly Cart _cart;
 
-        public CartController(IProductRepository repo)
+        public CartController(IProductRepository repository, Cart cart)
         {
-            _repository = repo;
+            _repository = repository;
+            _cart = cart;
         }
 
         public ViewResult Index(string returnUrl)
         {
-            return View(new CartIndexViewModel { Cart = GetCart(), ReturnUrl = returnUrl });
+            return View(new CartIndexViewModel { Cart = _cart, ReturnUrl = returnUrl });
         }
 
         public RedirectToActionResult AddToCart(int productId, string returnUrl)
@@ -28,9 +28,7 @@ namespace SportsStore.Controllers
 
             if (product != null)
             {
-                Cart cart = GetCart();
-                cart.AddItem(product, 1);
-                SaveCart(cart);
+                _cart.AddItem(product, 1);
             }
 
             return RedirectToAction("Index", new { returnUrl });
@@ -42,31 +40,10 @@ namespace SportsStore.Controllers
 
             if (product != null)
             {
-                Cart cart = GetCart();
-                cart.RemoveLine(product);
-                SaveCart(cart);
+                _cart.RemoveLine(product);
             }
 
             return RedirectToAction("Index", new { returnUrl });
-        }
-
-        /// <summary>
-        /// Get shopping cart from session state
-        /// </summary>
-        /// <returns>This session's shopping cart</returns>
-        private Cart GetCart()
-        {
-            Cart cart = HttpContext.Session.GetJson<Cart>("Cart") ?? new Cart();
-            return cart;
-        }
-
-        /// <summary>
-        /// Save shopping cart to session state
-        /// </summary>
-        /// <param name="cart">The current shopping cart</param>
-        private void SaveCart(Cart cart)
-        {
-            HttpContext.Session.SetJson("Cart", cart);
         }
     }
 }

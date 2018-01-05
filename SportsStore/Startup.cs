@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SportsStore.Data;
+using SportsStore.Models;
 
 namespace SportsStore
 {
@@ -15,15 +17,20 @@ namespace SportsStore
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration["Data:SportsStoreProducts:ConnectionString"]));
-
-            services.AddTransient<IProductRepository, EFProductRepository>();
-
             services.AddMvc();
 
+            // Database support
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(Configuration["Data:SportsStoreProducts:ConnectionString"]));
+            services.AddTransient<IProductRepository, EFProductRepository>();
+
+            // Session support
             services.AddMemoryCache();
             services.AddSession();
+
+            // Shopping cart service
+            services.AddScoped(SessionCart.GetCart);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
